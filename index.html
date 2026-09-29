@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Algebra Arcade: Quadratics — Lewis Family Edition</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#2a0f5c; --bg2:#160a36; --bg3:#3a1178;
+    --ink:#f4ecff; --muted:#b9a9e0;
+    --cyan:#22e0d6; --magenta:#ff4fd8; --lime:#b6f24a;
+    --gold:#ffcf3a; --coral:#ff7a6b; --violet:#9b6bff;
+    --good:#3ee089; --bad:#ff5d73;
+    --card:rgba(255,255,255,.07); --cardline:rgba(255,255,255,.16);
+    --shadow:0 14px 40px rgba(10,2,40,.55);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:'Nunito',system-ui,sans-serif;color:var(--ink);
+    min-height:100vh;
+    background:
+      radial-gradient(1200px 600px at 15% -10%, #4b1a9e55, transparent 60%),
+      radial-gradient(900px 500px at 110% 10%, #ff4fd833, transparent 55%),
+      radial-gradient(800px 700px at 50% 120%, #22e0d622, transparent 55%),
+      linear-gradient(160deg,var(--bg1),var(--bg2) 55%,var(--bg3));
+    background-attachment:fixed;
+  }
+  .wrap{max-width:760px;margin:0 auto;padding:20px 16px 60px}
+  h1,h2,h3{font-family:'Fredoka',sans-serif;margin:0;font-weight:700;letter-spacing:.3px}
+  button{font-family:'Fredoka',sans-serif;cursor:pointer;border:none}
+  .hidden{display:none !important}
+
+  /* ---------- HOME ---------- */
+  .hero{text-align:center;padding:18px 6px 6px}
+  .badge{display:inline-block;font-family:'Fredoka';font-size:.8rem;letter-spacing:1.5px;
+    color:var(--bg2);background:linear-gradient(90deg,var(--gold),var(--lime));
+    padding:5px 14px;border-radius:999px;font-weight:700;margin-bottom:12px;box-shadow:var(--shadow)}
+  .hero h1{font-size:2.9rem;line-height:1;
+    background:linear-gradient(92deg,var(--cyan),var(--magenta) 55%,var(--gold));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 4px 18px rgba(255,79,216,.35))}
+  .hero p{color:var(--muted);font-size:1rem;margin:12px auto 4px;max-width:440px;font-weight:600}
+  .xpbanner{display:flex;align-items:center;justify-content:center;gap:10px;margin:16px auto 4px;
+    font-family:'Fredoka';font-size:1rem}
+  .xpchip{background:var(--card);border:1px solid var(--cardline);border-radius:999px;
+    padding:8px 16px;box-shadow:var(--shadow)}
+  .xpchip b{color:var(--gold)}
+
+  .sectiontitle{display:flex;align-items:center;gap:10px;margin:26px 4px 12px}
+  .sectiontitle .num{font-family:'Fredoka';font-weight:700;font-size:.85rem;color:var(--bg2);
+    background:var(--cyan);border-radius:8px;padding:3px 9px}
+  .sectiontitle h2{font-size:1.15rem;color:var(--ink)}
+
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .tcard{position:relative;text-align:left;border-radius:20px;padding:16px 15px 15px;
+    background:var(--card);border:1px solid var(--cardline);box-shadow:var(--shadow);
+    color:var(--ink);transition:transform .12s ease, box-shadow .12s ease, background .12s;overflow:hidden}
+  .tcard:active{transform:scale(.97)}
+  .tcard:hover{background:rgba(255,255,255,.12)}
+  .tcard .emoji{font-size:1.7rem;display:block;margin-bottom:6px}
+  .tcard .tname{font-family:'Fredoka';font-weight:600;font-size:1.02rem;line-height:1.15}
+  .tcard .tmeta{color:var(--muted);font-size:.82rem;font-weight:700;margin-top:6px}
+  .tcard .strip{position:absolute;left:0;top:0;bottom:0;width:6px}
+  .tcard.boss{border-color:var(--gold);background:linear-gradient(180deg,rgba(255,207,58,.16),rgba(255,79,216,.10))}
+  .bossbadge{position:absolute;top:10px;right:10px;font-family:'Fredoka';font-weight:700;
+    font-size:.62rem;letter-spacing:.8px;color:var(--bg2);background:var(--gold);
+    padding:3px 8px;border-radius:999px}
+
+  .bigbtn{width:100%;margin-top:14px;border-radius:22px;padding:20px;font-size:1.25rem;font-weight:700;
+    color:var(--bg2);background:linear-gradient(92deg,var(--lime),var(--cyan) 50%,var(--magenta));
+    box-shadow:var(--shadow);transition:transform .12s}
+  .bigbtn:active{transform:scale(.98)}
+  .bigbtn small{display:block;font-weight:600;font-size:.8rem;opacity:.8;margin-top:3px}
+
+  .cheatbtn{margin-top:12px;width:100%;background:var(--card);border:1px dashed var(--cardline);
+    color:var(--muted);padding:13px;border-radius:16px;font-weight:600;font-size:.92rem}
+
+  /* ---------- QUIZ ---------- */
+  .topbar{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+  .iconbtn{background:var(--card);border:1px solid var(--cardline);color:var(--ink);
+    width:44px;height:44px;border-radius:14px;font-size:1.2rem;flex:0 0 auto}
+  .topbar .tlabel{font-family:'Fredoka';font-weight:600;font-size:1.05rem;flex:1;line-height:1.05}
+  .topbar .tlabel small{display:block;color:var(--muted);font-size:.72rem;font-weight:700}
+  .scorepill{font-family:'Fredoka';font-weight:700;background:var(--card);border:1px solid var(--cardline);
+    padding:8px 13px;border-radius:999px;font-size:.95rem}
+  .scorepill b{color:var(--gold)}
+
+  .progress{height:12px;background:rgba(255,255,255,.10);border-radius:999px;overflow:hidden;margin-bottom:6px}
+  .progress > i{display:block;height:100%;width:0;border-radius:999px;
+    background:linear-gradient(90deg,var(--cyan),var(--magenta));transition:width .35s ease}
+  .prow{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;font-weight:700;font-size:.8rem;color:var(--muted)}
+  .combo{font-family:'Fredoka';font-weight:700;color:var(--gold);opacity:0;transform:translateY(4px);transition:.2s}
+  .combo.show{opacity:1;transform:none}
+
+  .qcard{background:var(--card);border:1px solid var(--cardline);border-radius:24px;
+    padding:24px 20px;box-shadow:var(--shadow);margin-bottom:14px}
+  .qtag{font-family:'Fredoka';font-weight:600;font-size:.7rem;letter-spacing:1px;color:var(--bg2);
+    background:var(--violet);display:inline-block;padding:3px 10px;border-radius:999px;margin-bottom:12px}
+  .qproblem{background:linear-gradient(180deg,rgba(34,224,214,.15),rgba(155,107,255,.10));
+    border:1px solid var(--cardline);border-radius:14px;padding:11px 13px;margin-bottom:14px;
+    display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+  .qproblem .plabel{font-family:'Fredoka',sans-serif;font-weight:700;font-size:.62rem;letter-spacing:1px;
+    color:var(--bg2);background:var(--cyan);padding:3px 9px;border-radius:999px}
+  .qproblem .ptext{font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.05rem;flex:1 1 60%}
+  .qproblem .pstep{font-weight:800;font-size:.72rem;color:var(--muted);letter-spacing:.5px}
+  .qwork{background:rgba(255,255,255,.05);border:1px solid var(--cardline);border-left:3px solid var(--good);
+    border-radius:12px;padding:10px 12px;margin-bottom:14px}
+  .qwork .wlabel{font-family:'Fredoka',sans-serif;font-weight:700;font-size:.68rem;letter-spacing:.8px;
+    color:var(--good);margin-bottom:6px}
+  .qwork .wline{display:flex;align-items:center;gap:9px;padding:3px 0}
+  .qwork .wn{flex:0 0 auto;width:20px;height:20px;border-radius:7px;display:grid;place-items:center;
+    background:var(--good);color:var(--bg2);font-family:'Fredoka',sans-serif;font-weight:700;font-size:.72rem}
+  .qwork .wa{font-family:'Fredoka',sans-serif;font-weight:600;font-size:.98rem;color:var(--ink)}
+  .qtext{font-family:'Fredoka';font-weight:500;font-size:1.4rem;line-height:1.35}
+  .qtext .math{font-family:'Fredoka';font-weight:600;white-space:nowrap}
+
+  .options{display:grid;gap:11px;margin-top:6px}
+  .opt{position:relative;text-align:left;width:100%;background:rgba(255,255,255,.06);
+    border:2px solid var(--cardline);color:var(--ink);border-radius:18px;padding:16px 16px 16px 54px;
+    font-family:'Fredoka';font-weight:500;font-size:1.12rem;transition:transform .1s, border-color .15s, background .15s}
+  .opt:active{transform:scale(.985)}
+  .opt:not(:disabled):hover{border-color:var(--violet)}
+  .opt .key{position:absolute;left:12px;top:50%;transform:translateY(-50%);
+    width:30px;height:30px;border-radius:9px;display:grid;place-items:center;
+    background:rgba(255,255,255,.12);font-weight:700;font-size:.95rem;color:var(--ink)}
+  .opt.correct{border-color:var(--good);background:rgba(62,224,137,.16)}
+  .opt.correct .key{background:var(--good);color:var(--bg2)}
+  .opt.wrong{border-color:var(--bad);background:rgba(255,93,115,.14)}
+  .opt.wrong .key{background:var(--bad);color:#fff}
+  .opt.dim{opacity:.5}
+
+  .feedback{border-radius:18px;padding:16px 18px;margin-top:14px;font-weight:600;line-height:1.45;
+    border:1px solid var(--cardline);animation:pop .25s ease}
+  .feedback.ok{background:rgba(62,224,137,.12);border-color:rgba(62,224,137,.5)}
+  .feedback.no{background:rgba(255,93,115,.12);border-color:rgba(255,93,115,.5)}
+  .feedback .fh{font-family:'Fredoka';font-weight:700;font-size:1.05rem;margin-bottom:5px;display:flex;gap:8px;align-items:center}
+  .feedback .exp{color:var(--ink);font-size:.98rem}
+  .feedback .exp b{color:var(--gold)}
+  .nextbtn{width:100%;margin-top:14px;border-radius:18px;padding:17px;font-size:1.1rem;font-weight:700;
+    color:var(--bg2);background:linear-gradient(92deg,var(--gold),var(--lime));box-shadow:var(--shadow);transition:transform .12s}
+  .nextbtn:active{transform:scale(.98)}
+
+  /* ---------- RESULTS ---------- */
+  .result{text-align:center;background:var(--card);border:1px solid var(--cardline);
+    border-radius:26px;padding:30px 22px;box-shadow:var(--shadow)}
+  .stars{font-size:2.6rem;letter-spacing:6px;margin-bottom:6px}
+  .result h2{font-size:2rem;
+    background:linear-gradient(92deg,var(--cyan),var(--magenta));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .bigscore{font-family:'Fredoka';font-weight:700;font-size:3.4rem;margin:6px 0 2px;color:var(--gold)}
+  .result .sub{color:var(--muted);font-weight:700}
+  .statrow{display:flex;gap:10px;justify-content:center;margin:20px 0 4px;flex-wrap:wrap}
+  .stat{background:rgba(255,255,255,.07);border:1px solid var(--cardline);border-radius:16px;padding:12px 16px;min-width:92px}
+  .stat b{display:block;font-family:'Fredoka';font-size:1.5rem;color:var(--ink)}
+  .stat span{font-size:.72rem;color:var(--muted);font-weight:700;letter-spacing:.5px}
+  .reviewhead{text-align:left;font-family:'Fredoka';font-weight:600;margin:24px 4px 10px;font-size:1.05rem}
+  .rev{text-align:left;background:var(--card);border:1px solid var(--cardline);border-left:4px solid var(--bad);
+    border-radius:14px;padding:13px 15px;margin-bottom:10px}
+  .rev .rq{font-family:'Fredoka';font-weight:500;font-size:1rem;margin-bottom:6px}
+  .rev .ra{font-size:.9rem;font-weight:700;color:var(--good)}
+  .rev .re{font-size:.86rem;color:var(--muted);margin-top:5px;font-weight:600}
+  .rowbtns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+  .rowbtns button{border-radius:16px;padding:15px;font-weight:700;font-size:1rem}
+  .ghost{background:var(--card);border:1px solid var(--cardline);color:var(--ink)}
+  .solid{background:linear-gradient(92deg,var(--lime),var(--cyan));color:var(--bg2)}
+
+  /* cheat sheet modal */
+  .modal{position:fixed;inset:0;background:rgba(8,2,26,.72);display:grid;place-items:center;padding:18px;z-index:40}
+  .sheet{max-width:520px;width:100%;max-height:86vh;overflow:auto;background:linear-gradient(180deg,#241056,#1a0b3e);
+    border:1px solid var(--cardline);border-radius:22px;padding:22px;box-shadow:var(--shadow)}
+  .sheet h2{font-size:1.4rem;margin-bottom:4px;color:var(--gold)}
+  .sheet .formula{background:rgba(255,255,255,.06);border:1px solid var(--cardline);border-radius:14px;padding:12px 14px;margin:11px 0}
+  .sheet .formula .ft{font-family:'Fredoka';font-weight:700;color:var(--cyan);font-size:.95rem}
+  .sheet .formula .fm{font-family:'Fredoka';font-weight:600;font-size:1.15rem;margin-top:3px}
+  .sheet .formula .fd{color:var(--muted);font-size:.85rem;font-weight:600;margin-top:4px}
+  .closebtn{width:100%;margin-top:12px;background:var(--magenta);color:#fff;border-radius:14px;padding:14px;font-weight:700}
+
+  canvas#confetti{position:fixed;inset:0;pointer-events:none;z-index:30}
+  .soundtoggle{position:fixed;top:12px;right:12px;z-index:20;background:var(--card);border:1px solid var(--cardline);
+    color:var(--ink);width:42px;height:42px;border-radius:12px;font-size:1.1rem}
+
+  @media (max-width:420px){
+    .hero h1{font-size:2.35rem}
+    .qtext{font-size:1.22rem}
+    .grid{gap:10px}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
+  /* ---------- MASCOT: DJ BOT ---------- */
+  .mascot{width:130px;height:162px;margin:8px auto 2px;position:relative;overflow:visible;
+    filter:drop-shadow(0 12px 16px rgba(0,0,0,.42))}
+  .mascot.sm{width:96px;height:120px;margin:0}
+  .botstage{width:100%;height:100%;overflow:visible}
+  .botsvg{display:block;width:100%;height:100%;overflow:visible;transform-origin:50% 92%;
+    animation:botIdle 2.8s ease-in-out infinite}
+  .botsvg .shadow{fill:rgba(0,0,0,.28)}
+  .arm,.leg,.hat{transform-box:fill-box}
+  .arm-l,.arm-r{transform-origin:50% 8%}
+  .mascot.dancing .botsvg{animation:botDance .95s ease-in-out infinite}
+  .mascot.dancing .arm-l{animation:swingA .95s ease-in-out infinite}
+  .mascot.dancing .arm-r{animation:swingB .95s ease-in-out infinite}
+  .mascot.dancing .leg-l{animation:shuffleA .5s ease-in-out infinite}
+  .mascot.dancing .leg-r{animation:shuffleB .5s ease-in-out infinite}
+  @keyframes botIdle{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-5px) rotate(1.2deg)}}
+  @keyframes botDance{
+    0%{transform:translateY(0) rotate(0) scaleX(1)}
+    15%{transform:translateY(-3px) rotate(-10deg)}
+    30%{transform:translateY(0) rotate(10deg)}
+    45%{transform:translateY(-13px) rotate(0) scaleX(1)}
+    55%{transform:translateY(-3px) scaleX(-1)}
+    70%{transform:translateY(-11px) scaleX(-1)}
+    82%{transform:translateY(0) rotate(7deg) scaleX(1)}
+    100%{transform:translateY(0) rotate(0) scaleX(1)}
+  }
+  @keyframes swingA{0%,100%{transform:rotate(12deg)}50%{transform:rotate(-48deg)}}
+  @keyframes swingB{0%,100%{transform:rotate(-12deg)}50%{transform:rotate(48deg)}}
+  @keyframes shuffleA{0%,100%{transform:translateX(0)}50%{transform:translateX(7px)}}
+  @keyframes shuffleB{0%,100%{transform:translateX(0)}50%{transform:translateX(-7px)}}
+  .celebrateRow{display:flex;align-items:center;justify-content:center;gap:2px;margin:2px 0 12px}
+  .bubble{background:#fff;color:#25153f;font-family:'Fredoka',sans-serif;font-weight:700;
+    padding:11px 15px;border-radius:16px;position:relative;box-shadow:var(--shadow);font-size:1.02rem;max-width:180px}
+  .bubble:after{content:"";position:absolute;left:-9px;top:50%;transform:translateY(-50%);
+    border:9px solid transparent;border-right-color:#fff}
+  .nametag{display:inline-block;margin:0 auto 4px;font-family:'Fredoka',sans-serif;font-weight:700;
+    font-size:.8rem;color:var(--bg2);background:linear-gradient(90deg,var(--gold),var(--lime));
+    padding:5px 14px;border-radius:999px;box-shadow:var(--shadow)}
+  #grid0{grid-template-columns:1fr}
+  /* sad shuffle (wrong answer) */
+  .mascot.sad .botsvg{animation:botSad 1.1s ease-in-out infinite}
+  .mascot.sad .arm-l{animation:none;transform:rotate(8deg)}
+  .mascot.sad .arm-r{animation:none;transform:rotate(-8deg)}
+  @keyframes botSad{0%,100%{transform:translateY(3px) rotate(-5deg)}50%{transform:translateY(6px) rotate(5deg)}}
+  /* DANCE PARTY victory screen */
+  .party{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:20px;
+    background:linear-gradient(130deg,#3a0d6e,#0d1b6e,#6e0d55);animation:disco 3s linear infinite}
+  @keyframes disco{to{filter:hue-rotate(360deg)}}
+  .partyInner{text-align:center;max-width:620px;width:100%}
+  .partyTitle{font-family:'Fredoka',sans-serif;font-weight:700;font-size:3rem;line-height:1;
+    background:linear-gradient(92deg,#fff,var(--gold),var(--cyan),var(--magenta));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 4px 16px rgba(0,0,0,.4));animation:pulse 1s ease-in-out infinite}
+  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+  .partySub{color:#fff;font-weight:800;margin:8px 0 2px;font-size:1.05rem}
+  .partyStage{display:flex;justify-content:center;gap:0;flex-wrap:wrap;margin:6px 0}
+  .partyStage .mascot{width:92px;height:116px;margin:0}
+  .partyStage .mascot:nth-child(2) .botsvg{animation-delay:.15s}
+  .partyStage .mascot:nth-child(3) .botsvg{animation-delay:.32s}
+  .partyStage .mascot:nth-child(4) .botsvg{animation-delay:.48s}
+
+  @keyframes pop{from{transform:scale(.96);opacity:0}to{transform:scale(1);opacity:1}}
+  @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+  .floaty{animation:floaty 3s ease-in-out infinite}
+</style>
+</head>
+<body>
+<button class="soundtoggle" id="musicBtn" title="Music on/off" style="right:62px">🎵</button>
+<button class="soundtoggle" id="soundBtn" title="Sound effects on/off">🔊</button>
+<canvas id="confetti"></canvas>
+
+<div class="wrap">
+
+  <!-- HOME -->
+  <section id="home">
+    <div class="hero">
+      <span class="badge">★ QUADRATICS · LEWIS FAMILY EDITION ★</span>
+      <h1 class="floaty">QUADRATICS<br>ARCADE</h1>
+      <div id="heroBot" class="mascot"></div>
+      <div class="nametag">JAMES AEDAN 🤖 Chief Dance Officer</div>
+      <p>Beat every topic on the test, Lewis fam! Meet James Aedan — pick a challenge, answer right, and watch him dance. ⭐ = extra-practice boss levels.</p>
+      <div class="xpbanner"><span class="xpchip">Total XP <b id="totalXp">0</b></span></div>
+    </div>
+
+    <div class="sectiontitle"><span class="num">STUDY</span><h2>Know Your Steps 🧠</h2></div>
+    <div class="grid" id="grid0"></div>
+
+    <div class="sectiontitle"><span class="num">PART 1</span><h2>The 3 Forms &amp; Vertex</h2></div>
+    <div class="grid" id="grid1"></div>
+
+    <div class="sectiontitle"><span class="num">PART 2</span><h2>Graph Features</h2></div>
+    <div class="grid" id="grid2"></div>
+
+    <div class="sectiontitle"><span class="num">PART 3</span><h2>Write &amp; Apply</h2></div>
+    <div class="grid" id="grid3"></div>
+
+    <button class="bigbtn" id="testBtn">🏆 FULL TEST MODE<small>A shuffled mix of everything (22 questions)</small></button>
+    <button class="cheatbtn" id="cheatBtn">📋 Peek at the formula cheat sheet</button>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" class="hidden">
+    <div class="topbar">
+      <button class="iconbtn" id="backBtn">←</button>
+      <div class="tlabel" id="quizTitle">Topic<small id="quizSub">0 / 0</small></div>
+      <div class="scorepill">⭐ <b id="quizScore">0</b></div>
+    </div>
+    <div class="progress"><i id="bar"></i></div>
+    <div class="prow"><span id="qcount">Question 1</span><span class="combo" id="combo">🔥 Streak 0</span></div>
+
+    <div class="qcard">
+      <span class="qtag" id="qtag">TOPIC</span>
+      <div class="qproblem" id="qproblem" style="display:none"></div>
+      <div class="qwork" id="qwork" style="display:none"></div>
+      <div class="qtext" id="qtext">…</div>
+    </div>
+    <div class="options" id="options"></div>
+    <div id="feedbackHost"></div>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="results" class="hidden">
+    <div class="result">
+      <div id="resultBot" class="mascot sm"></div>
+      <div class="stars" id="stars">⭐⭐⭐</div>
+      <h2 id="resultHead">Nice work!</h2>
+      <div class="bigscore" id="resultScore">0</div>
+      <div class="sub" id="resultSub">points earned</div>
+      <div class="statrow">
+        <div class="stat"><b id="stCorrect">0</b><span>CORRECT</span></div>
+        <div class="stat"><b id="stAcc">0%</b><span>ACCURACY</span></div>
+        <div class="stat"><b id="stStreak">0</b><span>BEST STREAK</span></div>
+      </div>
+    </div>
+    <div id="reviewHost"></div>
+    <div class="rowbtns">
+      <button class="ghost" id="menuBtn">🏠 Menu</button>
+      <button class="solid" id="againBtn">🔁 Play again</button>
+    </div>
+  </section>
+</div>
+
+<!-- CHEAT SHEET -->
+<div class="modal hidden" id="cheatModal">
+  <div class="sheet">
+    <h2>Formula Cheat Sheet</h2>
+    <p style="color:var(--muted);font-weight:600;margin:2px 0 4px">The exact tools you need for this test.</p>
+
+    <div class="formula"><div class="ft">STANDARD FORM</div><div class="fm">f(x) = ax² + bx + c</div>
+      <div class="fd">Vertex x = −b/(2a), then plug in for y. c is the y-intercept. a > 0 opens up, a < 0 opens down.</div></div>
+    <div class="formula"><div class="ft">VERTEX FORM ⭐</div><div class="fm">y = a(x − h)² + k</div>
+      <div class="fd">Vertex is (h, k) — h flips sign: (x − 3) → h = 3, (x + 4) → h = −4. Axis of symmetry x = h.</div></div>
+    <div class="formula"><div class="ft">FACTORED FORM</div><div class="fm">y = a(x − p)(x − q)</div>
+      <div class="fd">Zeros (x-intercepts) at x = p and x = q. Axis of symmetry x = (p + q)/2.</div></div>
+    <div class="formula"><div class="ft">MAX or MIN</div><div class="fm">a > 0 → minimum · a < 0 → maximum</div>
+      <div class="fd">The value is k (the vertex's y-value).</div></div>
+    <div class="formula"><div class="ft">DOMAIN &amp; RANGE</div><div class="fm">Domain: (−∞, ∞)</div>
+      <div class="fd">Range: [k, ∞) if it opens up (min) · (−∞, k] if it opens down (max).</div></div>
+    <div class="formula"><div class="ft">ZEROS ⭐ &amp; y-INTERCEPT</div><div class="fm">Zeros: set y = 0, factor, solve</div>
+      <div class="fd">y-intercept: plug in x = 0 (equals c in standard form).</div></div>
+    <button class="closebtn" id="closeCheat">Got it ✕</button>
+  </div>
+</div>
+
+<!-- DANCE PARTY (perfect run) -->
+<div class="party hidden" id="party">
+  <div class="partyInner">
+    <div class="partyTitle">DANCE PARTY!</div>
+    <div class="partySub">Perfect score — James Aedan is losing it! 🕺✨</div>
+    <div class="partyStage" id="partyStage"></div>
+    <button class="closebtn" id="partyClose" style="max-width:280px;margin:10px auto 0">Take a bow →</button>
+  </div>
+</div>
+
+<script>
+/* ============================ QUESTION BANK ============================ */
+/* Each q: { t:tag, q:question, a:[correct, ...wrongs], e:explanation } */
+const TOPICS = {
+  nextstep:{name:"Next-Step Trainer", emoji:"🧠", color:"var(--gold)", boss:true, part:0, questions:[
+    {q:"To find the vertex from ax² + bx + c, the FIRST step is…", a:["Compute x = −b/(2a)","Factor it","Set y = 0","Plug in x = 0"], e:"The vertex's x-value is x = −b/(2a)."},
+    {q:"After finding the vertex's x-value, next step?", a:["Plug that x back in to get y","That's the answer","Set it equal to 0","Find −b/a"], e:"Plug the x back into the function for the y-coordinate."},
+    {q:"To read the vertex from y = a(x − h)² + k, remember h is…", a:["the opposite sign of what's inside","the same sign inside","the value of k","the value of a"], e:"(x − 3) → h = 3; (x + 4) → h = −4."},
+    {q:"To decide maximum vs minimum, look at…", a:["the sign of a (up → min, down → max)","the value of c","the y-intercept","the zeros"], e:"a > 0 opens up (min); a < 0 opens down (max)."},
+    {q:"To find the zeros, the first step is…", a:["Set y = 0, then factor/solve","Find −b/2a","Plug in x = 0","Find the vertex"], e:"Zeros are where y = 0."},
+    {q:"To find the y-intercept, plug in…", a:["x = 0","y = 0","the vertex","x = 1"], e:"The y-intercept is where x = 0."},
+    {q:"From factored form with zeros p and q, the axis of symmetry is…", a:["x = (p + q)/2 (average the zeros)","x = p · q","x = p − q","x = p + q"], e:"The axis is halfway between the zeros."},
+    {q:"To write a quadratic from a vertex and a point, you solve for…", a:["a","h","k","the zeros"], e:"Plug in the vertex and the point, then solve for a."}
+  ]},
+  solveit:{name:"Solve It Step-by-Step", emoji:"🧩", color:"var(--cyan)", boss:true, part:0, questions:[
+    {type:"walk", tag:"VERTEX (STANDARD)", color:"var(--gold)", problem:"Find the vertex of f(x) = x² − 4x + 1", steps:[
+      {q:"First step to find the vertex?", a:["Find x = −b/(2a)","Factor it","Set y = 0","Plug in x = 0"], e:"The vertex x-value is −b/(2a)."},
+      {q:"With a = 1, b = −4: x = −(−4)/(2·1) = ?", a:["2","−2","4","−4"], e:"4/2 = 2."},
+      {q:"Plug x = 2 into x² − 4x + 1:", a:["−3","3","5","1"], e:"4 − 8 + 1 = −3."},
+      {q:"The vertex is…", a:["(2, −3)","(−2, −3)","(2, 3)","(−3, 2)"], e:"(2, −3). 🎉"}
+    ]},
+    {type:"walk", tag:"VERTEX FORM", color:"var(--gold)", problem:"For y = −3(x − 1)² + 8, find the vertex and the max/min", steps:[
+      {q:"In y = a(x − h)² + k, the vertex is…", a:["(1, 8)","(−1, 8)","(1, −8)","(3, 8)"], e:"h is the opposite sign inside → (1, 8)."},
+      {q:"a = −3. Does it open up or down?", a:["Down → has a maximum","Up → has a minimum","Down → minimum","Up → maximum"], e:"a < 0 opens down → maximum."},
+      {q:"So the maximum value is…", a:["8","1","−3","−8"], e:"The max is the vertex's y-value: 8. 🎉"}
+    ]},
+    {type:"walk", tag:"ZEROS", color:"var(--magenta)", problem:"Find the zeros of f(x) = x² + 7x + 10", steps:[
+      {q:"First step to find the zeros?", a:["Set y = 0","Find −b/2a","Plug in x = 0","Find the vertex"], e:"Set it equal to 0: x² + 7x + 10 = 0."},
+      {q:"Factor: two numbers that multiply to 10 and add to 7?", a:["5 and 2","−5 and −2","10 and 1","5 and −2"], e:"5·2 = 10 and 5 + 2 = 7 → (x + 5)(x + 2)."},
+      {q:"Set each factor = 0. The zeros are…", a:["x = −5 and −2","x = 5 and 2","x = −5 and 2","x = 5 and −2"], e:"x + 5 = 0 → −5; x + 2 = 0 → −2. 🎉"}
+    ]},
+    {type:"walk", tag:"WRITE A QUADRATIC", color:"var(--cyan)", problem:"Vertex (−4, −33), passes through (1, 42). Write it in vertex form.", steps:[
+      {q:"Plug the vertex into y = a(x − h)² + k:", a:["y = a(x + 4)² − 33","y = a(x − 4)² − 33","y = a(x + 4)² + 33","y = a(x − 33)² − 4"], e:"h = −4, k = −33 → y = a(x + 4)² − 33."},
+      {q:"Use the point (1, 42): 42 = a(1 + 4)² − 33. Simplify (1 + 4)²:", a:["25","10","5","9"], e:"(5)² = 25 → 42 = 25a − 33."},
+      {q:"Solve 42 = 25a − 33 → 75 = 25a → a = ?", a:["3","2","25","−3"], e:"75 ÷ 25 = 3."},
+      {q:"The equation is…", a:["y = 3(x + 4)² − 33","y = 3(x − 4)² − 33","y = 25(x + 4)² − 33","y = 3(x + 4)² + 33"], e:"y = 3(x + 4)² − 33. 🎉"}
+    ]},
+    {type:"walk", tag:"WORD PROBLEM", color:"var(--coral)", problem:"A ball: h(t) = −4t² + 24t + 12. When does it reach max height, and how high?", steps:[
+      {q:"Max height is at the vertex. Find t = −b/(2a):", a:["t = 3","t = 6","t = −3","t = 12"], e:"−24/(2·−4) = −24/−8 = 3 seconds."},
+      {q:"Plug t = 3 into −4t² + 24t + 12:", a:["48","36","84","24"], e:"−4(9) + 72 + 12 = −36 + 84 = 48."},
+      {q:"So the ball reaches its max height of…", a:["48 feet at 3 seconds","36 feet at 3 seconds","48 feet at 6 seconds","24 feet at 3 seconds"], e:"48 feet in 3 seconds. 🎉"}
+    ]}
+  ]},
+  vstandard:{name:"Vertex from Standard", emoji:"📐", color:"var(--cyan)", part:1, questions:[
+    {q:"What formula gives the vertex's x-value from ax² + bx + c?", a:["x = −b/(2a)","x = −b/a","x = b/(2a)","x = −c/(2a)"], e:"x = −b/(2a), then plug in for y."},
+    {q:"Vertex of f(x) = x² + 6x + 5?", a:["(−3, −4)","(3, −4)","(−3, 4)","(3, 14)"], e:"x = −6/2 = −3; y = 9 − 18 + 5 = −4."},
+    {q:"Vertex of f(x) = 2x² − 8x + 3?", a:["(2, −5)","(−2, −5)","(2, 5)","(4, 3)"], e:"x = 8/4 = 2; y = 8 − 16 + 3 = −5."},
+    {q:"Vertex of g(x) = −x² + 6x − 2?", a:["(3, 7)","(−3, 7)","(3, −7)","(6, 7)"], e:"x = −6/(2·−1) = 3; y = −9 + 18 − 2 = 7."},
+    {q:"Vertex of f(x) = x² − 4x + 1?", a:["(2, −3)","(−2, −3)","(2, 3)","(4, 1)"], e:"x = 4/2 = 2; y = 4 − 8 + 1 = −3."}
+  ]},
+  vform:{name:"Vertex Form", emoji:"🔺", color:"var(--gold)", boss:true, part:1, questions:[
+    {q:"In y = a(x − h)² + k, the vertex is…", a:["(h, k)","(−h, k)","(h, −k)","(a, k)"], e:"Vertex = (h, k). Remember h flips its sign."},
+    {q:"Vertex of y = 2(x − 3)² + 5?", a:["(3, 5)","(−3, 5)","(3, −5)","(−3, −5)"], e:"x − 3 → h = 3; k = 5 → (3, 5)."},
+    {q:"Vertex of y = (x + 4)² − 7?", a:["(−4, −7)","(4, −7)","(−4, 7)","(4, 7)"], e:"x + 4 = x − (−4) → h = −4; k = −7."},
+    {q:"Vertex of y = −3(x − 1)² + 8?", a:["(1, 8)","(−1, 8)","(1, −8)","(3, 8)"], e:"h = 1, k = 8 → (1, 8)."},
+    {q:"Vertex of g(x) = (x − 5)² + 1?", a:["(5, 1)","(−5, 1)","(5, −1)","(1, 5)"], e:"h = 5, k = 1 → (5, 1)."}
+  ]},
+  factored:{name:"Factored Form (Zeros)", emoji:"✂️", color:"var(--magenta)", part:1, questions:[
+    {q:"Zeros of y = (x − 2)(x + 3)?", a:["x = 2 and −3","x = 2 and 3","x = −2 and 3","x = −2 and −3"], e:"Set each factor = 0: x = 2 and x = −3."},
+    {q:"Zeros of f(x) = (x − 7)(x − 9)?", a:["x = 7 and 9","x = −7 and −9","x = 7 and −9","x = 16"], e:"x − 7 = 0 → 7; x − 9 = 0 → 9."},
+    {q:"In y = a(x − p)(x − q), the x-intercepts are…", a:["x = p and x = q","(p, q) as one point","a and p","−p and −q"], e:"Each factor = 0 gives an x-intercept."},
+    {q:"Axis of symmetry of y = (x − 2)(x − 4)?", a:["x = 3","x = 2","x = 4","x = 6"], e:"Average the zeros: (2 + 4)/2 = 3."},
+    {q:"Axis of symmetry of f(x) = 3(x − 2)(x + 4)?", a:["x = −1","x = 1","x = −2","x = 3"], e:"Zeros 2 and −4 → (2 + (−4))/2 = −1."}
+  ]},
+  maxmin:{name:"Max or Min", emoji:"⛰️", color:"var(--coral)", part:1, questions:[
+    {q:"Does f(x) = 2(x + 3)² − 10 have a max or min, and its value?", a:["Minimum of −10","Maximum of −10","Minimum of 10","Maximum of 10"], e:"a = 2 > 0 opens up → minimum = k = −10."},
+    {q:"f(x) = −3x² − 6x + 5: max or min, and its value?", a:["Maximum of 8","Minimum of 8","Maximum of −8","Maximum of 5"], e:"a < 0 → max. x = −1; y = −3 + 6 + 5 = 8."},
+    {q:"If a > 0, the parabola…", a:["opens up and has a minimum","opens down and has a max","opens up and has a max","opens down and has a min"], e:"a > 0 → opens up → minimum."},
+    {q:"f(x) = 5(x − 2)(x + 4): max or min value?", a:["Minimum of −45","Maximum of −45","Minimum of 45","Minimum of −4"], e:"a > 0 → min. x = −1; y = 5(−3)(3) = −45."},
+    {q:"The max or min value of a parabola is the…", a:["y-coordinate of the vertex","x-coordinate of the vertex","value of a","axis of symmetry"], e:"It's k, the vertex's y-value."}
+  ]},
+  axis:{name:"Axis of Symmetry", emoji:"🪞", color:"var(--violet)", part:2, questions:[
+    {q:"Axis of symmetry of y = 2(x − 3)² + 5?", a:["x = 3","x = 5","x = −3","y = 3"], e:"Axis is x = h = 3."},
+    {q:"Axis of symmetry of f(x) = x² + 8x + 14?", a:["x = −4","x = 4","x = 8","x = −8"], e:"x = −b/2a = −8/2 = −4."},
+    {q:"For y = a(x − h)² + k, the axis of symmetry is…", a:["x = h","x = k","y = h","x = −h"], e:"The axis is the vertical line x = h."},
+    {q:"Axis of symmetry of f(x) = −(x − 7)(x − 9)?", a:["x = 8","x = 7","x = 9","x = 16"], e:"Zeros 7 and 9 → (7 + 9)/2 = 8."},
+    {q:"The axis of symmetry always passes through the…", a:["vertex","y-intercept","x-intercept","origin"], e:"It splits the parabola through the vertex."}
+  ]},
+  domainrange:{name:"Domain & Range", emoji:"↔️", color:"var(--cyan)", part:2, questions:[
+    {q:"The domain of any quadratic is…", a:["all real numbers, (−∞, ∞)","[0, ∞)","depends on the vertex","(−∞, k]"], e:"You can plug in any x → domain is all reals."},
+    {q:"Range of f(x) = 2(x − 1)² − 4 (min at −4)?", a:["[−4, ∞)","(−∞, −4]","[4, ∞)","(−∞, ∞)"], e:"Opens up from y = −4 → [−4, ∞)."},
+    {q:"Range of g(x) = −x² + 6x − 2 (max at 7)?", a:["(−∞, 7]","[7, ∞)","(−∞, −7]","[−7, ∞)"], e:"Opens down to a max of 7 → (−∞, 7]."},
+    {q:"Range of a parabola that opens up with vertex (3, −5)?", a:["[−5, ∞)","(−∞, −5]","[3, ∞)","(−∞, 3]"], e:"Opens up from y = −5 → [−5, ∞)."},
+    {q:"To find the range you need…", a:["the vertex's y-value and up/down","just the x-value","the y-intercept","the zeros"], e:"Range starts at k and goes up (min) or down (max)."}
+  ]},
+  zeros:{name:"Zeros / x-intercepts", emoji:"🎯", color:"var(--gold)", boss:true, part:2, questions:[
+    {q:"Find the zeros of f(x) = x² + 7x + 10.", a:["x = −5 and −2","x = 5 and 2","x = −5 and 2","x = 5 and −2"], e:"(x + 5)(x + 2) = 0 → x = −5, −2."},
+    {q:"x-intercepts of h(x) = x² − 13x + 36?", a:["x = 9 and 4","x = −9 and −4","x = 9 and −4","x = 13"], e:"(x − 9)(x − 4) = 0 → x = 9, 4."},
+    {q:"To find the zeros, set y = …", a:["0","x","the vertex","a"], e:"Zeros are where the graph hits the x-axis (y = 0)."},
+    {q:"Zeros of f(x) = x² − 9?", a:["x = 3 and −3","x = 9 and −9","x = 3 only","x = 0 and 9"], e:"(x − 3)(x + 3) = 0 → x = 3, −3."},
+    {q:"The zeros of a function are also called the…", a:["x-intercepts","y-intercepts","vertex","axis of symmetry"], e:"Zeros = roots = x-intercepts."}
+  ]},
+  yint:{name:"y-intercept", emoji:"📍", color:"var(--green)", part:2, questions:[
+    {q:"y-intercept of g(x) = x² − 4x + 20?", a:["(0, 20)","(20, 0)","(0, −20)","(0, 4)"], e:"Plug x = 0 → y = 20 → (0, 20)."},
+    {q:"To find the y-intercept, plug in…", a:["x = 0","y = 0","the vertex","x = 1"], e:"Set x = 0 and evaluate."},
+    {q:"y-intercept of h(x) = (x − 3)(x + 5)?", a:["(0, −15)","(0, 15)","(0, −8)","(0, 2)"], e:"(0 − 3)(0 + 5) = (−3)(5) = −15 → (0, −15)."},
+    {q:"In standard form ax² + bx + c, the y-intercept is…", a:["(0, c)","(0, a)","(0, b)","(0, −c)"], e:"When x = 0, y = c."},
+    {q:"y-intercept of f(x) = 2x² + 3x − 7?", a:["(0, −7)","(0, 7)","(0, 2)","(0, 3)"], e:"Plug x = 0 → y = −7."}
+  ]},
+  writeq:{name:"Write a Quadratic", emoji:"✍️", color:"var(--magenta)", part:3, questions:[
+    {q:"To write vertex form from a vertex and a point, first…", a:["plug the vertex in for h and k, then solve for a with the point","plug the point in for h and k","find −b/2a","set y = 0"], e:"Vertex gives h and k; the point lets you solve for a."},
+    {q:"Vertex (−4, −33), through (1, 42): find a.", a:["a = 3","a = 1","a = 25","a = −3"], e:"42 = a(5)² − 33 → 75 = 25a → a = 3."},
+    {q:"Vertex (3, −2), through (5, 3): find a.", a:["a = 5/4","a = 4","a = 5","a = 1/4"], e:"3 = a(2)² − 2 → 5 = 4a → a = 5/4."},
+    {q:"Vertex (−1, 4), through (2, 1): find a.", a:["a = −1/3","a = 1/3","a = −3","a = 3"], e:"1 = a(3)² + 4 → −3 = 9a → a = −1/3."}
+  ]},
+  wordq:{name:"Word Problems", emoji:"🚀", color:"var(--coral)", part:3, questions:[
+    {q:"h(t) = −4t² + 24t + 12. When is the max height reached?", a:["t = 3 seconds","t = 6 seconds","t = 12 seconds","t = 4 seconds"], e:"t = −24/(2·−4) = 3 seconds."},
+    {q:"h(t) = −4t² + 24t + 12. What is the max height?", a:["48 feet","12 feet","36 feet","84 feet"], e:"h(3) = −36 + 72 + 12 = 48 feet."},
+    {q:"For a thrown-ball height function, the max height is at the…", a:["vertex","y-intercept","zeros","t = 0"], e:"The peak of the parabola is the vertex."},
+    {q:"In h(t) = −16t² + 32t + 5, the starting height (t = 0) is…", a:["5","32","16","0"], e:"Plug t = 0 → h = 5 (that's c, the y-intercept)."}
+  ]}
+};
+const ORDER = ["nextstep","solveit","vstandard","vform","factored","maxmin","axis","domainrange","zeros","yint","writeq","wordq"];
+
+/* ============================ MASCOT (DJ BOT) ============================ */
+const BOT_SVG = `<div class="botstage"><svg class="botsvg" viewBox="0 0 140 176" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+  <ellipse class="shadow" cx="70" cy="169" rx="33" ry="6.5"/>
+  <g class="leg leg-l"><rect x="52" y="118" width="13" height="34" rx="6" fill="#2f6fd6"/><path d="M45 149h23a6 6 0 0 1 6 6v3H45z" fill="#234f9e"/><rect x="45" y="152" width="29" height="4" rx="2" fill="#fff"/></g>
+  <g class="leg leg-r"><rect x="75" y="118" width="13" height="34" rx="6" fill="#2f6fd6"/><path d="M69 149h23a6 6 0 0 1 6 6v3H69z" fill="#234f9e"/><rect x="69" y="152" width="29" height="4" rx="2" fill="#fff"/></g>
+  <g class="arm arm-l"><rect x="25" y="80" width="12" height="40" rx="6" fill="#3a86ff"/><circle cx="31" cy="122" r="8" fill="#8f5a37"/></g>
+  <g class="arm arm-r"><rect x="103" y="80" width="12" height="40" rx="6" fill="#3a86ff"/><circle cx="109" cy="122" r="8.5" fill="#fff"/><circle cx="106" cy="119" r="1.4" fill="#35d69b"/><circle cx="112" cy="124.5" r="1.1" fill="#22e0d6"/></g>
+  <rect x="38" y="70" width="64" height="60" rx="20" fill="#22c58a"/>
+  <rect x="38" y="70" width="64" height="22" rx="16" fill="#3a86ff"/>
+  <circle cx="70" cy="102" r="9" fill="#3a86ff"/><circle cx="70" cy="102" r="4" fill="#cfe6ff"/>
+  <g class="head">
+    <rect x="42" y="24" width="56" height="50" rx="22" fill="#8f5a37"/>
+    <circle cx="43" cy="51" r="5" fill="#824f30"/><circle cx="97" cy="51" r="5" fill="#824f30"/>
+    <path d="M46 42 Q45 21 70 19 Q95 21 94 42 L46 42 Z" fill="#17120f"/>
+    <g fill="#241a14"><circle cx="58" cy="27" r="5"/><circle cx="70" cy="24" r="5.5"/><circle cx="82" cy="27" r="5"/><circle cx="50" cy="33" r="3.6"/><circle cx="90" cy="33" r="3.6"/></g>
+    <path d="M46 42 L47 53 L50 52 L49 41 Z" fill="#17120f"/><path d="M94 42 L93 53 L90 52 L91 41 Z" fill="#17120f"/>
+    <ellipse cx="60" cy="50" rx="7" ry="8" fill="#fff"/><ellipse cx="80" cy="50" rx="7" ry="8" fill="#fff"/>
+    <circle cx="61" cy="51" r="3.4" fill="#20140c"/><circle cx="81" cy="51" r="3.4" fill="#20140c"/>
+    <circle cx="62.6" cy="49.4" r="1.3" fill="#fff"/><circle cx="82.6" cy="49.4" r="1.3" fill="#fff"/>
+    <path d="M62 63 q8 7 16 0" stroke="#4d2f1f" stroke-width="3" fill="none" stroke-linecap="round"/>
+  </g>
+</svg></div>`;
+const HYPE = ["Nice moves! 🕺","You nailed it! 👏","Ayy, that's right!","Sharp thinking! 🔥","Boom — correct!","Too smooth 😎","Math legend! 🏆","Yesss! ⭐","Keep it going!","That's the one! ✅"];
+const SAD = ["Aw, almost! Shake it off 💫","So close — read the steps 👇","No stress, you'll get the next one 💪","Not this time — check the fix below","James Aedan believes in you! Try the next one 🤖"];
+
+/* ============================ STATE ============================ */
+let totalXP = 0, soundOn = true;
+let cur = { key:null, list:[], idx:0, score:0, correct:0, streak:0, best:0, answered:false, missed:[], work:[], isTest:false };
+
+const $ = id => document.getElementById(id);
+const shuffle = a => { a=a.slice(); for(let i=a.length-1;i>0;i--){const j=(Math.random()*(i+1))|0;[a[i],a[j]]=[a[j],a[i]];} return a; };
+
+/* ============================ HOME BUILD ============================ */
+function buildHome(){
+  $("totalXp").textContent = totalXP;
+  const hb=$("heroBot"); if(hb) hb.innerHTML=BOT_SVG;
+  const parts = {0:$("grid0"),1:$("grid1"),2:$("grid2"),3:$("grid3")};
+  Object.values(parts).forEach(g=>g.innerHTML="");
+  ORDER.forEach(key=>{
+    const t = TOPICS[key];
+    const hasWalk = t.questions.some(q=>q.type==="walk");
+    const nMcq = t.questions.filter(q=>q.type!=="walk").length;
+    const nWalk = t.questions.filter(q=>q.type==="walk").length;
+    const perRound = Math.min(nMcq,MCQ_PER) + (nMcq? Math.min(nWalk,WALK_MIX) : Math.min(nWalk,WALK_ONLY));
+    const card = document.createElement("button");
+    card.className = "tcard" + (t.boss?" boss":"");
+    card.innerHTML = `<span class="strip" style="background:${t.color}"></span>
+      ${t.boss?'<span class="bossbadge">⭐ BOSS</span>':''}
+      <span class="emoji">${t.emoji}</span>
+      <span class="tname">${t.name}</span>
+      <span class="tmeta">${perRound} per round${hasWalk?' · 🧩 step-by-step':''}</span>`;
+    card.onclick = ()=>startTopic(key);
+    parts[t.part].appendChild(card);
+  });
+}
+
+/* ============================ START ============================ */
+/* Flatten items into "units": each unit is one multiple-choice prompt.
+   A walkthrough problem becomes several step-units that share a problem banner. */
+function buildUnits(items, opt){
+  const units=[];
+  items.forEach(it=>{
+    if(it.type==="walk"){
+      it.steps.forEach((s,i)=>units.push({q:s, tag:it.tag||opt.defTag, color:it.color||opt.defColor,
+        isStep:true, problem:it.problem, stepNum:i+1, stepTotal:it.steps.length}));
+    } else {
+      units.push({q:it, tag:opt.isTest?it.topicName:opt.defTag, color:it.color||opt.defColor, isStep:false});
+    }
+  });
+  return units;
+}
+function startTopic(key){
+  const t = TOPICS[key];
+  const units = buildUnits(pickSession(t.questions), {defTag:t.name, defColor:t.color, isTest:false});
+  cur = { key, units, idx:0, score:0, correct:0, streak:0, best:0, answered:false, missed:[], work:[], isTest:false, name:t.name, emoji:t.emoji, color:t.color };
+  enterQuiz();
+}
+/* one short round: ~6 quick questions + a walkthrough if the section has one
+   (a walkthrough-only section gives up to 3). Reshuffled on every replay. */
+const MCQ_PER=2, WALK_MIX=0, WALK_ONLY=2;
+function pickSession(items){
+  const walks = shuffle(items.filter(q=>q.type==="walk"));
+  const mcqs  = shuffle(items.filter(q=>q.type!=="walk"));
+  const wPick = mcqs.length ? walks.slice(0,WALK_MIX) : walks.slice(0,WALK_ONLY);
+  const mPick = mcqs.slice(0,MCQ_PER);
+  return shuffle([...wPick, ...mPick]);
+}
+function startTest(){
+  let pool=[];
+  ORDER.forEach(key=>{
+    if(key==="solveit") return;             // walkthroughs stay in their own practice mode
+    const t=TOPICS[key];
+    const n = t.boss?4:2;
+    shuffle(t.questions.filter(q=>q.type!=="walk")).slice(0,n).forEach(q=> pool.push({...q, topicName:t.name, color:t.color}));
+  });
+  pool = shuffle(pool).slice(0,22);
+  const units = buildUnits(pool, {defTag:"Full Test", defColor:"var(--gold)", isTest:true});
+  cur = { key:"__test", units, idx:0, score:0, correct:0, streak:0, best:0, answered:false, missed:[], work:[], isTest:true, name:"Full Test Mode", emoji:"🏆", color:"var(--gold)" };
+  enterQuiz();
+}
+function enterQuiz(){
+  $("home").classList.add("hidden");
+  $("results").classList.add("hidden");
+  $("quiz").classList.remove("hidden");
+  window.scrollTo(0,0);
+  renderQ();
+}
+
+/* ============================ RENDER QUESTION ============================ */
+function renderWork(){
+  const u = cur.units[cur.idx], qw=$("qwork");
+  if(u && u.isStep && cur.work && cur.work.length){
+    qw.style.display="block";
+    qw.innerHTML = `<div class="wlabel">✓ Work so far</div>` +
+      cur.work.map(w=>`<div class="wline"><span class="wn">${w.n}</span><span class="wa">${w.a}</span></div>`).join("");
+  } else qw.style.display="none";
+}
+function renderQ(){
+  const u = cur.units[cur.idx];
+  const q = u.q;
+  cur.answered=false;
+  $("quizTitle").childNodes[0].nodeValue = cur.emoji+" "+cur.name;
+  $("quizSub").textContent = `${cur.idx+1} of ${cur.units.length}`;
+  $("quizScore").textContent = cur.score;
+  $("qcount").textContent = u.isStep ? `🧩 Step ${u.stepNum} / ${u.stepTotal}` : `Question ${cur.idx+1}`;
+  $("bar").style.width = (cur.idx/cur.units.length*100)+"%";
+  const combo=$("combo");
+  if(cur.streak>=2){combo.classList.add("show");combo.textContent=`🔥 Streak ${cur.streak}`;}
+  else combo.classList.remove("show");
+
+  $("qtag").textContent = (u.tag||cur.name).toUpperCase();
+  $("qtag").style.background = u.color || cur.color;
+
+  const qp=$("qproblem");
+  if(u.isStep){
+    qp.style.display="flex";
+    qp.innerHTML = `<span class="plabel">SOLVE</span><span class="ptext">${u.problem}</span><span class="pstep">Step ${u.stepNum} of ${u.stepTotal}</span>`;
+  } else qp.style.display="none";
+
+  if(u.isStep && u.stepNum===1) cur.work=[];   // new problem → fresh work
+  renderWork();
+
+  $("qtext").innerHTML = `<span class="math">${q.q}</span>`;
+  $("feedbackHost").innerHTML="";
+
+  const correctText = q.a[0];
+  const opts = shuffle(q.a.map((text,i)=>({text, correct:i===0})));
+  const host = $("options"); host.innerHTML="";
+  const letters=["A","B","C","D"];
+  opts.forEach((o,i)=>{
+    const b=document.createElement("button");
+    b.className="opt";
+    b.innerHTML=`<span class="key">${letters[i]}</span>${o.text}`;
+    b.onclick=()=>choose(b, o.correct, correctText, q, host);
+    host.appendChild(b);
+  });
+}
+
+/* ============================ ANSWER ============================ */
+function choose(btn, isCorrect, correctText, q, host){
+  if(cur.answered) return;
+  cur.answered=true;
+  [...host.children].forEach(c=>{c.disabled=true; if(!c.classList.contains('picked')) c.classList.add('dim');});
+  btn.classList.remove('dim'); btn.classList.add('picked');
+
+  let gained=0;
+  if(isCorrect){
+    btn.classList.add("correct");
+    cur.correct++; cur.streak++; cur.best=Math.max(cur.best,cur.streak);
+    gained = 10 + Math.min(cur.streak-1,5)*2;   // streak bonus up to +10
+    cur.score+=gained; totalXP+=gained;
+    beep(true); burst();
+  } else {
+    btn.classList.add("wrong");
+    cur.streak=0;
+    [...host.children].forEach(c=>{ if(c.textContent.slice(1)===correctText) c.classList.add("correct"); });
+    const _u=cur.units[cur.idx];
+    cur.missed.push({q:_u.isStep?`${_u.problem} — ${q.q}`:q.q, a:correctText, e:q.e});
+    beep(false);
+  }
+  $("quizScore").textContent=cur.score;
+
+  const _uw=cur.units[cur.idx];
+  if(_uw.isStep){ cur.work=cur.work||[]; cur.work.push({n:_uw.stepNum, a:correctText}); renderWork(); }
+
+  const fb=document.createElement("div");
+  fb.className="feedback "+(isCorrect?"ok":"no");
+  fb.innerHTML = `<div class="fh">${isCorrect?`✅ Correct! <span style="color:var(--gold)">+${gained} XP</span>`+(cur.streak>=2?` · 🔥 ${cur.streak} streak`:""):"❌ Not quite"}</div>
+    <div class="exp">${isCorrect?"":`Answer: <b>${correctText}</b>. `}${q.e}</div>`;
+  const next=document.createElement("button");
+  next.className="nextbtn";
+  const _last = cur.idx===cur.units.length-1;
+  const _u2 = cur.units[cur.idx], _nu = cur.units[cur.idx+1];
+  next.textContent = _last ? "See results →"
+    : (_u2.isStep && _nu && _nu.isStep && _nu.problem===_u2.problem) ? "Next step →" : "Next question →";
+  next.onclick=()=>{ cur.idx++; if(cur.idx>=cur.units.length) finish(); else { renderQ(); window.scrollTo({top:0,behavior:'smooth'}); } };
+  if(isCorrect){
+    const cel=document.createElement("div"); cel.className="celebrateRow";
+    cel.innerHTML=`<div class="mascot sm dancing">${BOT_SVG}</div><div class="bubble">${HYPE[(Math.random()*HYPE.length)|0]}</div>`;
+    $("feedbackHost").appendChild(cel);
+  } else {
+    const sadEl=document.createElement("div"); sadEl.className="celebrateRow";
+    sadEl.innerHTML=`<div class="mascot sm sad">${BOT_SVG}</div><div class="bubble">${SAD[(Math.random()*SAD.length)|0]}</div>`;
+    $("feedbackHost").appendChild(sadEl);
+  }
+  $("feedbackHost").appendChild(fb);
+  $("feedbackHost").appendChild(next);
+  next.scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+
+/* ============================ RESULTS ============================ */
+function finish(){
+  $("quiz").classList.add("hidden");
+  $("results").classList.remove("hidden");
+  window.scrollTo(0,0);
+  const total=cur.units.length, acc=Math.round(cur.correct/total*100);
+  const stars = acc>=90?"⭐⭐⭐":acc>=70?"⭐⭐":acc>=40?"⭐":"✨";
+  $("stars").textContent=stars;
+  const rb=$("resultBot"); if(rb){ rb.innerHTML=BOT_SVG; rb.classList.toggle("dancing", acc>=70); }
+  $("resultHead").textContent = acc>=90?"You crushed it!":acc>=70?"Great job!":acc>=40?"Keep grinding!":"Practice makes progress!";
+  $("resultScore").textContent = cur.score;
+  $("resultSub").textContent = `points earned  ·  Total XP: ${totalXP}`;
+  $("stCorrect").textContent=`${cur.correct}/${total}`;
+  $("stAcc").textContent=acc+"%";
+  $("stStreak").textContent=cur.best;
+
+  const rh=$("reviewHost"); rh.innerHTML="";
+  if(cur.missed.length){
+    const h=document.createElement("div"); h.className="reviewhead";
+    h.textContent=`📌 Review these ${cur.missed.length} (the ones to study):`;
+    rh.appendChild(h);
+    cur.missed.forEach(m=>{
+      const d=document.createElement("div"); d.className="rev";
+      d.innerHTML=`<div class="rq">${m.q}</div><div class="ra">✔ ${m.a}</div><div class="re">${m.e}</div>`;
+      rh.appendChild(d);
+    });
+  } else {
+    const h=document.createElement("div"); h.className="reviewhead";
+    h.innerHTML="🎉 Perfect run — nothing to review. You've got this topic down!";
+    rh.appendChild(h);
+  }
+  if(acc>=70) celebrate();
+  if(acc===100) launchParty();
+}
+
+/* ============================ NAV ============================ */
+$("testBtn").onclick=startTest;
+$("backBtn").onclick=()=>{ $("quiz").classList.add("hidden"); buildHome(); $("home").classList.remove("hidden"); window.scrollTo(0,0); };
+$("menuBtn").onclick=()=>{ $("results").classList.add("hidden"); buildHome(); $("home").classList.remove("hidden"); window.scrollTo(0,0); };
+$("againBtn").onclick=()=>{ if(cur.isTest) startTest(); else startTopic(cur.key); };
+$("cheatBtn").onclick=()=>$("cheatModal").classList.remove("hidden");
+$("closeCheat").onclick=()=>$("cheatModal").classList.add("hidden");
+$("cheatModal").onclick=e=>{ if(e.target.id==="cheatModal") $("cheatModal").classList.add("hidden"); };
+$("soundBtn").onclick=()=>{ soundOn=!soundOn; $("soundBtn").textContent=soundOn?"🔊":"🔇"; };
+
+/* ============================ DANCE PARTY ============================ */
+function launchParty(){
+  const stage=$("partyStage"); stage.innerHTML="";
+  for(let i=0;i<4;i++){ const m=document.createElement("div"); m.className="mascot dancing"; m.innerHTML=BOT_SVG; stage.appendChild(m); }
+  $("party").classList.remove("hidden");
+  celebrate(); setTimeout(celebrate,650); setTimeout(celebrate,1300);
+  victorySound();
+}
+$("partyClose").onclick=()=>$("party").classList.add("hidden");
+$("party").onclick=e=>{ if(e.target.id==="party") $("party").classList.add("hidden"); };
+function victorySound(){
+  if(!soundOn) return;
+  try{
+    actx = actx || new (window.AudioContext||window.webkitAudioContext)();
+    const now=actx.currentTime;
+    [523,659,784,1047,1319].forEach((f,i)=>{
+      const o=actx.createOscillator(), g=actx.createGain();
+      o.type="triangle"; o.frequency.value=f; o.connect(g); g.connect(actx.destination);
+      const t=now+i*0.11;
+      g.gain.setValueAtTime(0.0001,t);
+      g.gain.exponentialRampToValueAtTime(0.14,t+0.03);
+      g.gain.exponentialRampToValueAtTime(0.0001,t+0.32);
+      o.start(t); o.stop(t+0.34);
+    });
+  }catch(e){}
+}
+
+/* ============================ SOUND ============================ */
+let actx=null;
+function beep(good){
+  if(!soundOn) return;
+  try{
+    actx = actx || new (window.AudioContext||window.webkitAudioContext)();
+    const now=actx.currentTime;
+    const notes = good?[523,659,784]:[220,180];
+    notes.forEach((f,i)=>{
+      const o=actx.createOscillator(), g=actx.createGain();
+      o.type=good?"triangle":"sawtooth"; o.frequency.value=f;
+      o.connect(g); g.connect(actx.destination);
+      const t=now+i*0.08;
+      g.gain.setValueAtTime(0.0001,t);
+      g.gain.exponentialRampToValueAtTime(0.13,t+0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001,t+0.14);
+      o.start(t); o.stop(t+0.16);
+    });
+  }catch(e){}
+}
+
+/* ============================ BACKGROUND MUSIC ============================ */
+let musicOn=true, musicTimer=null, musicStep=0, nextNoteTime=0, musicGain=null, noiseBuf=null;
+const BPM=74, STEP=(60/BPM)/4, SW=STEP*0.34;   // slower + swing on the "and"
+/* Smooth neo-soul turnaround: Cmaj7(9) – Am7 – Dm9 – G7 (a progression, not any song) */
+const CH=[
+  {bass:65.41,  pad:[164.81,196.00,246.94,293.66]},  // Cmaj7(9): E3 G3 B3 D4
+  {bass:110.00, pad:[164.81,196.00,220.00,261.63]},  // Am7:      E3 G3 A3 C4
+  {bass:73.42,  pad:[174.61,220.00,261.63,329.63]},  // Dm9:      F3 A3 C4 E4
+  {bass:98.00,  pad:[174.61,196.00,246.94,293.66]},  // G7:       F3 G3 B3 D4
+];
+function ensureAudio(){
+  actx = actx || new (window.AudioContext||window.webkitAudioContext)();
+  if(!musicGain){ musicGain=actx.createGain(); musicGain.gain.value=0.0001; musicGain.connect(actx.destination); }
+}
+function noise(){
+  if(!noiseBuf){ noiseBuf=actx.createBuffer(1, (actx.sampleRate*0.3)|0, actx.sampleRate);
+    const d=noiseBuf.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1; }
+  return noiseBuf;
+}
+function mTone(freq,time,dur,type,vol){
+  const o=actx.createOscillator(), g=actx.createGain();
+  o.type=type; o.frequency.value=freq; o.connect(g); g.connect(musicGain);
+  g.gain.setValueAtTime(0.0001,time);
+  g.gain.exponentialRampToValueAtTime(vol,time+0.02);
+  g.gain.exponentialRampToValueAtTime(0.0001,time+dur);
+  o.start(time); o.stop(time+dur+0.03);
+}
+function padTone(freq,time,dur,vol){      // warm Rhodes-ish pad note
+  const o=actx.createOscillator(), g=actx.createGain();
+  o.type="sine"; o.frequency.value=freq; o.detune.value=(Math.random()*6-3);
+  o.connect(g); g.connect(musicGain);
+  g.gain.setValueAtTime(0.0001,time);
+  g.gain.exponentialRampToValueAtTime(vol,time+0.12);      // soft attack
+  g.gain.setValueAtTime(vol,time+dur*0.55);                // sustain
+  g.gain.exponentialRampToValueAtTime(0.0001,time+dur);    // gentle release
+  o.start(time); o.stop(time+dur+0.05);
+}
+function bassNote(freq,time,dur,vol){
+  const o=actx.createOscillator(), g=actx.createGain();
+  o.type="sine"; o.frequency.value=freq; o.connect(g); g.connect(musicGain);
+  g.gain.setValueAtTime(0.0001,time);
+  g.gain.exponentialRampToValueAtTime(vol,time+0.03);
+  g.gain.exponentialRampToValueAtTime(0.0001,time+dur);
+  o.start(time); o.stop(time+dur+0.03);
+}
+function nHit(time,dur,freq,q,vol,type){   // filtered noise burst (snare/hat)
+  const s=actx.createBufferSource(); s.buffer=noise();
+  const f=actx.createBiquadFilter(); f.type=type||"highpass"; f.frequency.value=freq; if(q) f.Q.value=q;
+  const g=actx.createGain(); g.gain.setValueAtTime(vol,time); g.gain.exponentialRampToValueAtTime(0.0001,time+dur);
+  s.connect(f); f.connect(g); g.connect(musicGain); s.start(time); s.stop(time+dur+0.02);
+}
+function mKick(time){
+  const o=actx.createOscillator(), g=actx.createGain();
+  o.type="sine"; o.frequency.setValueAtTime(120,time); o.frequency.exponentialRampToValueAtTime(42,time+0.14);
+  g.gain.setValueAtTime(0.15,time); g.gain.exponentialRampToValueAtTime(0.0001,time+0.2);
+  o.connect(g); g.connect(musicGain); o.start(time); o.stop(time+0.22);
+}
+function snare(time){
+  nHit(time,0.16,1700,0.6,0.075,"bandpass");
+  const o=actx.createOscillator(), g=actx.createGain();
+  o.type="triangle"; o.frequency.value=190;
+  g.gain.setValueAtTime(0.045,time); g.gain.exponentialRampToValueAtTime(0.0001,time+0.12);
+  o.connect(g); g.connect(musicGain); o.start(time); o.stop(time+0.14);
+}
+function scheduleStep(step,time){
+  const bar=Math.floor(step/16)%4, s=step%16, ch=CH[bar], barLen=16*STEP;
+  if(s===0) ch.pad.forEach(f=>padTone(f,time,barLen*0.95,0.03));   // sustained chord
+  if(s===0) bassNote(ch.bass,time,0.6,0.14);                        // bass on beat 1
+  if(s===8) bassNote(ch.bass,time,0.5,0.11);                        // bass on beat 3
+  if(s===11) bassNote(ch.bass*1.5,time+SW,0.16,0.06);              // syncopated 5th pickup
+  if(s===0||s===10) mKick(time);                                   // laid-back kick
+  if(s===4||s===12) snare(time);                                   // backbeat (2 & 4)
+  if(s%2===0){ const off=(s%4===2)?SW:0; nHit(time+off,(s%4===2)?0.05:0.03,9000,0,(s%4===2)?0.03:0.018,"highpass"); } // swung hats
+  if((bar===0||bar===2)&&s===6) mTone(ch.pad[3]*2,time+SW,0.22,"sine",0.03); // soft EP sparkle
+}
+function musicScheduler(){
+  while(nextNoteTime < actx.currentTime + 0.16){ scheduleStep(musicStep,nextNoteTime); musicStep++; nextNoteTime+=STEP; }
+  musicTimer=setTimeout(musicScheduler,25);
+}
+function startMusic(){
+  if(!musicOn) return;
+  try{
+    ensureAudio();
+    if(actx.state==="suspended") actx.resume();
+    musicGain.gain.cancelScheduledValues(actx.currentTime);
+    musicGain.gain.setTargetAtTime(0.85, actx.currentTime, 0.7);   // fade in
+    if(musicTimer) return;
+    nextNoteTime=actx.currentTime+0.1; musicScheduler();
+  }catch(e){}
+}
+function stopMusic(){
+  try{
+    if(musicGain) musicGain.gain.setTargetAtTime(0.0001, actx.currentTime, 0.25);
+    if(musicTimer){ clearTimeout(musicTimer); musicTimer=null; }
+  }catch(e){}
+}
+$("musicBtn").onclick=()=>{ musicOn=!musicOn; $("musicBtn").textContent=musicOn?"🎵":"🔕"; if(musicOn) startMusic(); else stopMusic(); };
+/* browsers block audio until the first tap — start the loop then */
+function firstGesture(){ if(musicOn) startMusic(); document.removeEventListener("pointerdown",firstGesture); }
+document.addEventListener("pointerdown",firstGesture);
+
+/* ============================ CONFETTI ============================ */
+const cv=$("confetti"), ctx=cv.getContext("2d");
+let parts=[];
+function resize(){cv.width=innerWidth;cv.height=innerHeight;}
+resize(); addEventListener("resize",resize);
+const COLORS=["#22e0d6","#ff4fd8","#b6f24a","#ffcf3a","#ff7a6b","#9b6bff"];
+function burst(){ for(let i=0;i<26;i++) parts.push(mk(innerWidth/2,innerHeight*0.4,7)); run(); }
+function celebrate(){ for(let i=0;i<140;i++) parts.push(mk(Math.random()*innerWidth,-20,10)); run(); }
+function mk(x,y,s){return {x,y,vx:(Math.random()-0.5)*7,vy:Math.random()*-6-2,g:0.22,size:Math.random()*s+3,c:COLORS[(Math.random()*COLORS.length)|0],rot:Math.random()*6,vr:(Math.random()-0.5)*0.3,life:120};}
+let raf=null;
+function run(){ if(raf) return; raf=requestAnimationFrame(loop); }
+function loop(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  parts.forEach(p=>{ p.vy+=p.g; p.x+=p.vx; p.y+=p.vy; p.rot+=p.vr; p.life--;
+    ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot); ctx.fillStyle=p.c;
+    ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size*0.6); ctx.restore();
+  });
+  parts=parts.filter(p=>p.life>0 && p.y<cv.height+40);
+  if(parts.length) raf=requestAnimationFrame(loop); else { raf=null; ctx.clearRect(0,0,cv.width,cv.height); }
+}
+
+/* ============================ INIT ============================ */
+buildHome();
+</script>
+</body>
+</html>
